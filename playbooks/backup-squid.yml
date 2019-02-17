@@ -1,0 +1,9 @@
+---
+- name: Backup squid webproxy
+  hosts: webproxy
+  tasks:
+    - name: get file contents
+      fetch:
+        src: /etc/squid/squid.conf
+        dest: /etc/ansible/backups/webproxy-squid.conf.txt
+        flat: yes

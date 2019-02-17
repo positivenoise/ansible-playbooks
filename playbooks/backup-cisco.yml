@@ -1,0 +1,50 @@
+---
+- name: Hosts that require enable password
+  hosts: cisco-enable
+  gather_facts: no
+  connection: local
+  ignore_errors: yes
+  vars:
+    creds:
+       host: "{{ host }}"
+       username: "{{ username }}"
+       password: "{{ password }}"
+       authorize: yes
+       auth_pass: "{{ auth_pass }}"
+  tasks:
+   - name: timestamp
+     local_action: command date +%Y%m%d
+     register: timestamp
+   - name: show run 
+     ios_command:
+      provider: "{{ creds }}"
+      commands: show run
+     register: config
+   - name: save output to /etc/ansible/backups 
+     copy: 
+       content: "{{ config.stdout[0] }}"
+       dest: "/etc/ansible/backups/{{ inventory_hostname }}_{{ timestamp.stdout }}.txt"
+
+- name: Hosts that require NO enable password
+  hosts: cisco-noenable
+  gather_facts: no
+  connection: local
+  
+  vars:
+    creds:
+       host: "{{ host }}"
+       username: "{{ username }}"
+       password: "{{ password }}"
+  tasks:
+   - name: timestamp
+     local_action: command date +%Y%m%d
+     register: timestamp
+   - name: show run 
+     ios_command:
+      provider: "{{ creds }}"
+      commands: show run
+     register: config
+   - name: save output to /etc/ansible/backups 
+     copy: 
+       content: "{{ config.stdout[0] }}"
+       dest: "/etc/ansible/backups/{{ inventory_hostname }}_{{ timestamp.stdout }}.txt"

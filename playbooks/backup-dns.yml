@@ -1,0 +1,10 @@
+---
+- name: Backup DNS
+  gather_facts: no
+  hosts: dns
+  tasks:
+    - name: get file contents
+      fetch:
+        src: /etc/named.conf
+        dest: /etc/ansible/backups/dns-named.conf.txt
+        flat: yes
